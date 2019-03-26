@@ -72,4 +72,5 @@ fwrite($fp, '
 fclose($fp);
 
 copy('../Template/info/getFile.php', $dir.'info/getFile.php');
+copy('../Template/info/count_temp.txt', $dir.'info/count.txt');
 ?>
