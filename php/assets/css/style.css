@@ -1,0 +1,20 @@
+.main-title {
+    font-size: 4em;
+    font-family: Righteous;
+    margin-top:28vh;
+}
+
+.mobile-disable {
+    display: none;
+ }
+
+@media only screen and (min-width: 992px) {
+    .mobile-disable {
+        display: block;
+    }
+}
+
+footer {
+    position: fixed;
+    bottom: 5px;
+}
