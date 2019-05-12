@@ -6,15 +6,23 @@
 
 .mobile-disable {
     display: none;
- }
+}
+
+.mainheading h1.sitetitle {
+    font-family:Righteous;
+}
+
+.mainheading h1.posttitle {
+    font-weight:700;
+    margin-bottom:1rem;
+}
+
+#login-form > div {
+    margin: 15px 0;
+}
 
 @media only screen and (min-width: 992px) {
     .mobile-disable {
         display: block;
     }
-}
-
-footer {
-    position: fixed;
-    bottom: 5px;
 }
