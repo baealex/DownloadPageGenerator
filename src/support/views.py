@@ -5,10 +5,9 @@ from django.template.loader import render_to_string
 from .models import *
 from .forms import SubscriberForm
 from django.core.mail import EmailMessage
-import datetime
+from .consts import *
 
-block_base_url = 'https://travlan-extends.run.goorm.io/subscribe/block/'
-active_base_url = 'https://travlan-extends.run.goorm.io/subscribe/active/'
+import datetime
 
 def inner_subscribe(request):
     form = SubscriberForm()
@@ -37,20 +36,23 @@ def subscribe(request):
             'count': str(len(Subscriber.objects.filter())),
         })
     if request.method == 'POST':
-        form = SubscriberForm(request.POST, request.FILES)
+        form = SubscriberForm(request.POST)
         if form.is_valid():
             subscriber_info = form.save(commit=False)
             subscriber_info.token = randstr(64)
             subscriber_info.save()
-
-            html_message = render_to_string('newsletter_template.html', {
-                'content': '<h3>메일을 인증해주세요!</h3><p><a href="'+ active_base_url + subscriber_info.token +'" target="_blank">인증하기</a></p>',
-                'blocking_url': block_base_url + str(baealex_hash(subscriber_info.email))
-            })
-            email = EmailMessage('[BaeJino] ' + subscriber_info.name + '님! 메일을 인증해주세요!', html_message, to=[subscriber_info.email])
-            email.content_subtype = 'html'
-            email.send()
-        return JsonResponse({'result':'Y'})
+            try:
+                html_message = render_to_string('newsletter_template.html', {
+                    'content': '<h3>메일을 인증해주세요!</h3><p><a href="'+ ACTIVE_URL + subscriber_info.token +'" target="_blank">인증하기</a></p>',
+                    'blocking_url': BLOCK_URL + str(baealex_hash(subscriber_info.email))
+                })
+                email = EmailMessage('[BaeJino] ' + subscriber_info.name + '님! 메일을 인증해주세요!', html_message, to=[subscriber_info.email])
+                email.content_subtype = 'html'
+                email.send()
+            except:
+                return JsonResponse({'result':'E'})
+            return JsonResponse({'result':'Y'})
+        return JsonResponse({'result':'N'})
 
 @csrf_exempt
 def send_newsletter(request):
@@ -65,7 +67,7 @@ def send_newsletter(request):
                 if subscriber.is_active:
                     html_message = render_to_string('newsletter_template.html', {
                         'content': content,
-                        'blocking_url': 'https://travlan-extends.run.goorm.io/subscribe/block/' + str(baealex_hash(subscriber.email))
+                        'blocking_url': BLOCK_URL + str(baealex_hash(subscriber.email))
                     })
                     email = EmailMessage('[BaeJino] ' + subscriber.name + '님! ' + str(now_time.isocalendar()[1]) + '주차 정기 뉴스레터 입니다.', html_message, to=[subscriber.email])
                     email.content_subtype = 'html'
@@ -75,3 +77,7 @@ def send_newsletter(request):
             return HttpResponse('ALL DONE!')
     else:
         raise Http404()
+
+@csrf_exempt
+def send_newsletter_test(requests):
+    pass
